@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Objects;
 
+//import com.fhzn.demo.mapper.UserMapper;
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @RequestMapping("user")
@@ -100,6 +101,12 @@ public class UserController {
     @DeleteMapping("")
     @Operation(description = "删除应用")
     public WebResponse<Void> delete(@Validated @RequestBody IdRequest request) {
+
+
+//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("id",request.getId());
+//
+//        int count = UserMapper.selectCount(queryWrapper);
         userService.removeById(request.getId());
         return WebResponse.success();
     }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -42,17 +43,33 @@ public class UserController {
     @Operation(description = "应用列表")
     public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
+        // TODO 区分and和or的查询
         QueryWrapper<User> wrapper = Wrappers.query();
+
+
         if (!checkObjAllFieldsIsNull(user)) {
-
-            wrapper.eq("name", user.getName());
-            wrapper.or();
-            wrapper.eq("id", user.getId());
-//            wrapper.eq("if_deleted", test.getId());
-            //修改
+            if(!Objects.isNull(user.getId())){
+                wrapper.eq("id", user.getId());
+            }
+            if(!Objects.isNull(user.getName())){
+                wrapper.eq("name", user.getName());
+            }
+            if(!Objects.isNull(user.getAccount())){
+                wrapper.eq("account", user.getAccount());
+            }
+            if(!Objects.isNull(user.getPassword())){
+                wrapper.eq("password", user.getPassword());
+            }
+            if(!Objects.isNull(user.getType())){
+                wrapper.eq("type", user.getType());
+            }
+            if(!Objects.isNull(user.getStatus())){
+                wrapper.eq("status", user.getStatus());
+            }
+            if(!Objects.isNull(user.getPhonenumber())){
+                wrapper.eq("phonenumber", user.getPhonenumber());
+            }
         }
-
-
         Page<User> page = userService.page(Page.of(request.getPage(), request.getPageSize()), wrapper);
         PageInfo<UserVO> ret = Converters.convert2page(page, UserMapper::toApplicationVO);
         return WebResponse.success(ret);
@@ -113,4 +130,5 @@ public class UserController {
         }
         return true;
     }
+
 }

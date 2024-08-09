@@ -51,9 +51,7 @@ feign:
 mybatis-plus:
   global-config:
     db-config:
-      logic-delete-field: status
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+      logic-delete-field: null
       id-type: auto
 
 # log

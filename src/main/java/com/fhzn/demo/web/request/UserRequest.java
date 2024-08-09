@@ -36,7 +36,7 @@ public class UserRequest {
 
     @Schema(description = "状态。1：启用；2：禁用")
     @NotNull
-    private StatusEnum status;
+    private String status;
 
     @Schema(description = "手机号")
     @Length(max = 32)

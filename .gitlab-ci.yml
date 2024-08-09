@@ -1,0 +1,39 @@
+variables:
+  HARBOR_REGISTRY: harbor-dev.fhzny.com:60002
+  TAG: $CI_COMMIT_SHORT_SHA
+  BRANCH: $CI_COMMIT_REF_NAME
+  IMAGE_PROJECT: liuxiuyuan-test
+  IMAGE_NAME: test-cicd
+
+stages:
+  - build
+  - docker_build_push
+
+build:
+  stage: build
+  image: harbor-dev.fhzny.com:60002/base/maven:3.6.2-jdk-8-inner
+  tags:
+    - local_runner
+  script:
+    - sed -i 's#http://nexus.fhzny.com#http://192.168.1.97#g' /root/.m2/settings.xml
+    - mvn clean compile install -DskipTests
+  artifacts:
+    paths:
+      - "target/*.jar"
+    expire_in: 1 h
+
+
+docker_build_push:
+  stage: docker_build_push
+  image: harbor-dev.fhzny.com:60002/devops/docker/docker:20.10.21-dind
+  tags:
+    - local_runner
+  script:
+    - date
+    - dockerd &
+    - sleep 10
+    - date
+    - docker login harbor-dev.fhzny.com:60002 -u admin -p fhzn123456
+    - date
+    - docker build -t ${HARBOR_REGISTRY}/${IMAGE_PROJECT}/${IMAGE_NAME}:${TAG} .
+    - docker push ${HARBOR_REGISTRY}/${IMAGE_PROJECT}/${IMAGE_NAME}:${TAG}

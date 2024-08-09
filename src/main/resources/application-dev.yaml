@@ -1,0 +1,24 @@
+server:
+  port: 18081
+
+mysql:
+  host: ${MYSQL_HOST:localhost}
+  port: ${MYSQL_PORT:3306}
+  username: ${MYSQL_USER:root}
+  password: ${MYSQL_PASSWORD:123456}
+  database: ${MYSQL_DATABASE:server-demo}
+
+system:
+  feignClient:
+    logLevel: DEBUG
+  sql:
+    logLevel: DEBUG
+  log:
+    dir: logs
+  accesslog:
+    enabled: false
+  flyway:
+    enabled: true
+
+swagger:
+  enabled: true

@@ -1,0 +1,84 @@
+server:
+  error:
+    whitelabel:
+      enabled: false
+  tomcat:
+    basedir: ${system.log.dir}
+    accesslog:
+      enabled: ${system.accesslog.enabled}
+
+spring:
+  profiles:
+    active: default, dev
+  mvc:
+    throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  web:
+    resources:
+      add-mappings: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/server-demo?zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&createDatabaseIfNotExist=true
+    username: root
+    password: 123456
+  flyway:
+    enabled: ${system.flyway.enabled}
+    baseline-on-migrate: true
+  jackson:
+    time-zone: Asia/Shanghai
+  main:
+    allow-bean-definition-overriding: true
+
+# feign
+# wups host
+remote:
+  host:
+    wups: http://192.168.1.98:30650
+
+# wupsClient配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        requestInterceptors:
+          - com.fhzn.demo.remote.UserContextInterceptor
+        loggerLevel: FULL
+
+# mybatis-plus
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: ifDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+
+# log
+logging:
+  level:
+    # feign client log level
+    com.fhzn.demo.remote: ${system.feignClient.logLevel}
+    # sql level
+    com.fhzn.demo.mapper: ${system.sql.logLevel}
+
+# swagger
+springdoc:
+  packages-to-scan: com.fhzn.demo.web
+  api-docs:
+    enabled: ${swagger.enabled}
+  swagger-ui:
+    enabled: ${swagger.enabled}
+    doc-expansion: none
+
+fhzn:
+  swagger:
+    group: 脚手架
+    info:
+      title: 脚手架
+      description: 脚手架
+      version: 1.0.0
+
+# others

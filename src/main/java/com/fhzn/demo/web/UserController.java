@@ -41,7 +41,7 @@ public class UserController {
 //    private final UserClient userClient;
 
     @GetMapping("")
-    @Operation(description = "应用列表")
+    @Operation(description = "用户列表")
     public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
         // TODO 区分and和or的查询
@@ -77,7 +77,7 @@ public class UserController {
     }
 
     @PostMapping("")
-    @Operation(description = "新增应用")
+    @Operation(description = "新增用户")
     public WebResponse<Long> save(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         user.setCreator(RequestContext.getRequestData().getNickname());
@@ -90,7 +90,7 @@ public class UserController {
     }
 
     @PutMapping("")
-    @Operation(description = "修改应用")
+    @Operation(description = "修改用户")
     public WebResponse<Long> Update(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         user.setModifier(RequestContext.getRequestData().getNickname());
@@ -99,16 +99,17 @@ public class UserController {
     }
 
     @DeleteMapping("")
-    @Operation(description = "删除应用")
-    public WebResponse<Void> delete(@Validated @RequestBody IdRequest request) {
-
-
-//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("id",request.getId());
-//
-//        int count = UserMapper.selectCount(queryWrapper);
-        userService.removeById(request.getId());
-        return WebResponse.success();
+    @Operation(description = "删除用户")
+    public WebResponse<Long> deleteOrRestore(@Validated @RequestBody UserRequest request) {
+        User user = UserMapper.fromRequest(request);
+        user.setModifier(RequestContext.getRequestData().getNickname());
+        if(user.getStatus().equals("1")){
+            user.setStatus("0");
+        }else if (user.getStatus().equals("0")){
+            user.setStatus("1");
+        }
+        userService.saveOrUpdate(user);
+        return WebResponse.success(user.getId());
     }
 
 

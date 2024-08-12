@@ -2,20 +2,16 @@ package com.fhzn.demo.web;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fhzn.commons.toolkit.entity.PageInfo;
 import com.fhzn.commons.toolkit.entity.PageRequest;
 import com.fhzn.commons.webapi.entity.WebResponse;
-//import com.fhzn.commons.wups.client.UserClient;
-
 import com.fhzn.demo.entity.User;
 import com.fhzn.demo.service.UserService;
 import com.fhzn.demo.web.converter.Converters;
 import com.fhzn.demo.web.converter.UserMapper;
 import com.fhzn.demo.web.interceptor.RequestContext;
-import com.fhzn.demo.web.request.IdRequest;
 import com.fhzn.demo.web.request.UserRequest;
 import com.fhzn.demo.web.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,28 +23,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Objects;
 
-//import com.fhzn.demo.mapper.UserMapper;
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @RequestMapping("user")
 @Tag(name = "user")
 public class UserController {
     private final UserService userService;
-//    private final UserClient userClient;
-
     @GetMapping("")
     @Operation(description = "用户列表/用户查询/登录验证")
     public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
-        // TODO 区分and和or的查询
         QueryWrapper<User> wrapper = Wrappers.query();
-
-
         if (!checkObjAllFieldsIsNull(user)) {
             if(!Objects.isNull(user.getId())){
                 wrapper.eq("id", user.getId());
@@ -115,7 +104,6 @@ public class UserController {
     public WebResponse<Long> deleteOrRestore(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         user.setModifier(RequestContext.getRequestData().getNickname());
-
         QueryWrapper<User> wrapper = Wrappers.query();
         wrapper.eq("account", user.getAccount());
         if(userService.getOne(wrapper,false)==null){
@@ -131,11 +119,6 @@ public class UserController {
         return WebResponse.success(user.getId());
     }
 
-
-//    @GetMapping("/auth-query")
-//    public Object auth() {
-//        return userClient.authQuery(null);
-//    }
 
     private boolean checkObjAllFieldsIsNull(Object object) {
         // 如果对象为null直接返回true

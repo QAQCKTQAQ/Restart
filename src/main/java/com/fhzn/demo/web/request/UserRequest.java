@@ -1,11 +1,8 @@
 package com.fhzn.demo.web.request;
 
-
-import com.fhzn.demo.constant.StatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 

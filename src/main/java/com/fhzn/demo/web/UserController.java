@@ -2,6 +2,7 @@ package com.fhzn.demo.web;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fhzn.commons.toolkit.entity.PageInfo;
@@ -41,7 +42,7 @@ public class UserController {
 //    private final UserClient userClient;
 
     @GetMapping("")
-    @Operation(description = "用户列表")
+    @Operation(description = "用户列表/用户查询/登录验证")
     public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
         // TODO 区分and和or的查询
@@ -80,11 +81,16 @@ public class UserController {
     @Operation(description = "新增用户")
     public WebResponse<Long> save(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
+        QueryWrapper<User> wrapper = Wrappers.query();
+        wrapper.eq("account", user.getAccount());
         user.setCreator(RequestContext.getRequestData().getNickname());
         user.setModifier(RequestContext.getRequestData().getNickname());
         user.setCreatedTime(new Date());
         user.setUpdatedTime(new Date());
-
+        if(userService.getOne(wrapper,false)!=null){
+            return WebResponse.error("账号已存在");
+        }
+        user.setId(null);
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }
@@ -93,21 +99,34 @@ public class UserController {
     @Operation(description = "修改用户")
     public WebResponse<Long> Update(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
+        QueryWrapper<User> wrapper = Wrappers.query();
         user.setModifier(RequestContext.getRequestData().getNickname());
+        wrapper.eq("account", user.getAccount());
+        if(userService.getOne(wrapper,false)==null){
+            return WebResponse.error("账号不存在");
+        }
+        user.setId(null);
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }
 
     @DeleteMapping("")
-    @Operation(description = "删除用户")
+    @Operation(description = "删除用户/恢复用户")
     public WebResponse<Long> deleteOrRestore(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         user.setModifier(RequestContext.getRequestData().getNickname());
+
+        QueryWrapper<User> wrapper = Wrappers.query();
+        wrapper.eq("account", user.getAccount());
+        if(userService.getOne(wrapper,false)==null){
+            return WebResponse.error("账号不存在");
+        }
         if(user.getStatus().equals("1")){
             user.setStatus("0");
         }else if (user.getStatus().equals("0")){
             user.setStatus("1");
         }
+
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }

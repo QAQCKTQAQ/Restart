@@ -14,6 +14,9 @@ public class Application implements WebMvcConfigurer {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
+
+
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RequestContextInterceptor()).excludePathPatterns("/swagger-ui/**",
@@ -21,6 +24,8 @@ public class Application implements WebMvcConfigurer {
             "/swagger-resources/**",
             "/swagger-resources/configuration/**",
             "/webjars/**",
-            "/swagger-ui.html");
+            "/swagger-ui.html",
+            "/bff/user/login");
+
     }
 }

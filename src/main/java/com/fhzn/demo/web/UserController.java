@@ -29,7 +29,7 @@ import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@RequestMapping("user")
+@RequestMapping("")
 @Tag(name = "user")
 public class UserController {
     private final UserService userService;
@@ -64,6 +64,21 @@ public class UserController {
         Page<User> page = userService.page(Page.of(request.getPage(), request.getPageSize()), wrapper);
         PageInfo<UserVO> ret = Converters.convert2page(page, UserMapper::toApplicationVO);
         return WebResponse.success(ret);
+    }
+
+    @PostMapping("/bff/user/login")
+    @Operation(description = "登录验证")
+    public WebResponse<PageInfo<UserVO>> login(@ParameterObject PageRequest request,
+                                              @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
+        QueryWrapper<User> wrapper = Wrappers.query();
+        wrapper.eq("account", user.getAccount());
+        wrapper.eq("password", user.getPassword());
+        if(userService.getOne(wrapper,false)==null){
+            return WebResponse.error("账号不存在01");
+        }else{
+            return WebResponse.success(null);
+        }
+
     }
 
     @PostMapping("")

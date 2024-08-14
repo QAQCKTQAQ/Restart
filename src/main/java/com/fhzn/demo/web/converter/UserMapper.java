@@ -14,7 +14,7 @@ public interface UserMapper {
 
         userVO.setId(user.getId());
         userVO.setName(user.getName());
-        userVO.setAccount(user.getAccount());
+        userVO.setUsername(user.getUsername());
         userVO.setPassword(user.getPassword());
         userVO.setStatus(user.getStatus());
         userVO.setType(user.getType());
@@ -37,7 +37,7 @@ public interface UserMapper {
 
         user.setId(request.getId());
         user.setName(request.getName());
-        user.setAccount(request.getAccount());
+        user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setStatus(request.getStatus());
         user.setType(request.getType());

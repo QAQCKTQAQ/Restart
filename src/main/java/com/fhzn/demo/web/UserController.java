@@ -46,8 +46,8 @@ public class UserController {
             if(!Objects.isNull(user.getName())){
                 wrapper.eq("name", user.getName());
             }
-            if(!Objects.isNull(user.getAccount())){
-                wrapper.eq("account", user.getAccount());
+            if(!Objects.isNull(user.getUsername())){
+                wrapper.eq("username", user.getUsername());
             }
             if(!Objects.isNull(user.getPassword())){
                 wrapper.eq("password", user.getPassword());
@@ -72,7 +72,7 @@ public class UserController {
     public WebResponse<PageInfo<UserVO>> login(@ParameterObject PageRequest request,
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
         QueryWrapper<User> wrapper = Wrappers.query();
-        wrapper.eq("account", user.getAccount());
+        wrapper.eq("username", user.getUsername());
         String realpw=null;
         try {
             String encryptedData = user.getPassword(); // 替换为实际的加密数据
@@ -95,7 +95,7 @@ public class UserController {
     public WebResponse<Long> save(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         QueryWrapper<User> wrapper = Wrappers.query();
-        wrapper.eq("account", user.getAccount());
+        wrapper.eq("username", user.getUsername());
         user.setCreator(RequestContext.getRequestData().getNickname());
         user.setModifier(RequestContext.getRequestData().getNickname());
         user.setCreatedTime(new Date());
@@ -114,7 +114,7 @@ public class UserController {
         User user = UserMapper.fromRequest(request);
         QueryWrapper<User> wrapper = Wrappers.query();
         user.setModifier(RequestContext.getRequestData().getNickname());
-        wrapper.eq("account", user.getAccount());
+        wrapper.eq("username", user.getUsername());
         if(userService.getOne(wrapper,false)==null){
             return WebResponse.error("账号不存在");
         }
@@ -129,7 +129,7 @@ public class UserController {
         User user = UserMapper.fromRequest(request);
         user.setModifier(RequestContext.getRequestData().getNickname());
         QueryWrapper<User> wrapper = Wrappers.query();
-        wrapper.eq("account", user.getAccount());
+        wrapper.eq("username", user.getUsername());
         if(userService.getOne(wrapper,false)==null){
             return WebResponse.error("账号不存在");
         }

@@ -20,7 +20,7 @@ public class UserRequest {
     @Schema(description = "账号", minLength = 3, maxLength = 20)
     @NotEmpty
     @Length(min = 3, max = 20)
-    private String account;
+    private String username;
 
     @Schema(description = "密码")
     @Length(max = 255)

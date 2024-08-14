@@ -9,6 +9,7 @@ import com.fhzn.commons.toolkit.entity.PageRequest;
 import com.fhzn.commons.webapi.entity.WebResponse;
 import com.fhzn.demo.entity.User;
 import com.fhzn.demo.service.UserService;
+import com.fhzn.demo.util.RSAUtils;
 import com.fhzn.demo.web.converter.Converters;
 import com.fhzn.demo.web.converter.UserMapper;
 import com.fhzn.demo.web.interceptor.RequestContext;
@@ -72,7 +73,15 @@ public class UserController {
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
         QueryWrapper<User> wrapper = Wrappers.query();
         wrapper.eq("account", user.getAccount());
-        wrapper.eq("password", user.getPassword());
+        String realpw=null;
+        try {
+            String encryptedData = user.getPassword(); // 替换为实际的加密数据
+            realpw = RSAUtils.decrypt(encryptedData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        wrapper.eq("password", realpw);
         if(userService.getOne(wrapper,false)==null){
             return WebResponse.error("账号不存在01");
         }else{

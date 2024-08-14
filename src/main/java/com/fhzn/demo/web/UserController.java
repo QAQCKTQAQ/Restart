@@ -143,6 +143,10 @@ public class UserController {
         return WebResponse.success(user.getId());
     }
 
+    @GetMapping("/auth-service/auth/query")
+    public Object auth() {
+        return WebResponse.success();
+    }
 
     private boolean checkObjAllFieldsIsNull(Object object) {
         // 如果对象为null直接返回true

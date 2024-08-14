@@ -25,7 +25,7 @@ public class Application implements WebMvcConfigurer {
             "/swagger-resources/configuration/**",
             "/webjars/**",
             "/swagger-ui.html",
-            "/bff/user/login");
+            "/auth-service/**");
 
     }
 }

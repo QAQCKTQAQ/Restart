@@ -66,7 +66,7 @@ public class UserController {
         return WebResponse.success(ret);
     }
 
-    @PostMapping("/bff/user/login")
+    @PostMapping("/auth-service/gateWay/user/passwordCheck")
     @Operation(description = "登录验证")
     public WebResponse<PageInfo<UserVO>> login(@ParameterObject PageRequest request,
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {

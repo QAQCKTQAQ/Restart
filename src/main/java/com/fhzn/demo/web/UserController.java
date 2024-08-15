@@ -34,34 +34,42 @@ import java.util.Objects;
 @Tag(name = "user")
 public class UserController {
     private final UserService userService;
-    @GetMapping("")
+    @GetMapping("/auth-service/user/query")
     @Operation(description = "用户列表/用户查询/登录验证")
-    public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
-                                              @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
+//    public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
+////                                              @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user)
+    public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request, @Parameter(name = "name", description = "目标用户名称")
+        @RequestParam(required = false) Integer id,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String username,
+        @RequestParam(required = false) String password,
+        @RequestParam(required = false) String type,
+        @RequestParam(required = false) Integer status,
+        @RequestParam(required = false) String phonenumber
+    )
+    {
         QueryWrapper<User> wrapper = Wrappers.query();
-        if (!checkObjAllFieldsIsNull(user)) {
-            if(!Objects.isNull(user.getId())){
-                wrapper.eq("id", user.getId());
+            if(!Objects.isNull(id)){
+                wrapper.eq("id",id);
             }
-            if(!Objects.isNull(user.getName())){
-                wrapper.eq("name", user.getName());
+            if(!Objects.isNull(name)){
+                wrapper.eq("name", name);
             }
-            if(!Objects.isNull(user.getUsername())){
-                wrapper.eq("username", user.getUsername());
+            if(!Objects.isNull(username)){
+                wrapper.eq("username", username);
             }
-            if(!Objects.isNull(user.getPassword())){
-                wrapper.eq("password", user.getPassword());
+            if(!Objects.isNull(password)){
+                wrapper.eq("password", password);
             }
-            if(!Objects.isNull(user.getType())){
-                wrapper.eq("type", user.getType());
+            if(!Objects.isNull(type)){
+                wrapper.eq("type", type);
             }
-            if(!Objects.isNull(user.getStatus())){
-                wrapper.eq("status", user.getStatus());
+            if(!Objects.isNull(status)){
+                wrapper.eq("status", status);
             }
-            if(!Objects.isNull(user.getPhonenumber())){
-                wrapper.eq("phonenumber", user.getPhonenumber());
+            if(!Objects.isNull(phonenumber)){
+                wrapper.eq("phonenumber", phonenumber);
             }
-        }
         Page<User> page = userService.page(Page.of(request.getPage(), request.getPageSize()), wrapper);
         PageInfo<UserVO> ret = Converters.convert2page(page, UserMapper::toApplicationVO);
         return WebResponse.success(ret);
@@ -90,14 +98,36 @@ public class UserController {
 
     }
 
-    @PostMapping("")
+    @PostMapping("/auth-service/v2/user/add")
     @Operation(description = "新增用户")
     public WebResponse<Long> save(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         QueryWrapper<User> wrapper = Wrappers.query();
-        wrapper.eq("username", user.getUsername());
-        user.setCreator(RequestContext.getRequestData().getNickname());
-        user.setModifier(RequestContext.getRequestData().getNickname());
+        if (!checkObjAllFieldsIsNull(user)) {
+            if(!Objects.isNull(user.getId())){
+                wrapper.eq("id", user.getId());
+            }
+            if(!Objects.isNull(user.getName())){
+                wrapper.eq("name", user.getName());
+            }
+            if(!Objects.isNull(user.getUsername())){
+                wrapper.eq("username", user.getUsername());
+            }
+            if(!Objects.isNull(user.getPassword())){
+                wrapper.eq("password", user.getPassword());
+            }
+            if(!Objects.isNull(user.getType())){
+                wrapper.eq("type", user.getType());
+            }
+            if(!Objects.isNull(user.getStatus())){
+                wrapper.eq("status", user.getStatus());
+            }
+            if(!Objects.isNull(user.getPhonenumber())){
+                wrapper.eq("phonenumber", user.getPhonenumber());
+            }
+        }
+        user.setCreator("ckt");
+        user.setModifier("ckt");
         user.setCreatedTime(new Date());
         user.setUpdatedTime(new Date());
         if(userService.getOne(wrapper,false)!=null){
@@ -108,17 +138,18 @@ public class UserController {
         return WebResponse.success(user.getId());
     }
 
-    @PutMapping("")
+    @PostMapping("/auth-service/v2/user/update")
     @Operation(description = "修改用户")
     public WebResponse<Long> Update(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
+        user.setUpdatedTime(new Date());
         QueryWrapper<User> wrapper = Wrappers.query();
-        user.setModifier(RequestContext.getRequestData().getNickname());
+        user.setModifier("ckt");
         wrapper.eq("username", user.getUsername());
         if(userService.getOne(wrapper,false)==null){
             return WebResponse.error("账号不存在");
         }
-        user.setId(null);
+        user.setId(userService.getOne(wrapper,false).getId());
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }
@@ -146,6 +177,7 @@ public class UserController {
     @GetMapping("/auth-service/auth/query")
     public Object auth() {
         return WebResponse.success();
+//        return testClient.authQuery(null);
     }
 
     private boolean checkObjAllFieldsIsNull(Object object) {

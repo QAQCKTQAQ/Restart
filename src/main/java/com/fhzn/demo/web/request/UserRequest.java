@@ -14,7 +14,7 @@ public class UserRequest {
 
     @Schema(description = "姓名")
     @NotEmpty
-    @Length(min = 1, max = 10)
+    @Length(min = 1, max = 20)
     private String name;
 
     @Schema(description = "账号", minLength = 3, maxLength = 20)

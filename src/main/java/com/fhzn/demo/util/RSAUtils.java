@@ -1,7 +1,9 @@
 package com.fhzn.demo.util;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import javax.crypto.Cipher;
 
@@ -19,6 +21,12 @@ public class RSAUtils {
             "X5hwSWdE5FYIRPhIw6wOHi5YcKBczRkZAiEA8aYfZf/GxhcvZYQL4qPd57bQiflf\n" +
             "/OQyGGCLhCV5bgc=\n" +
             "-----END PRIVATE KEY-----";
+
+    private static final String PUBLIC_KEY_PEM =
+    "-----BEGIN PUBLIC KEY-----\n" +
+        "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMfcNpgD1tBLbD5kmnasrr68/04I23zH\n" +
+        "/MNEbpT40Gx/6M/2CDyFIs0kH1XqJevpiHZI8N0XiONFRoP3hZJvT+UCAwEAAQ==\n" +
+        "-----END PUBLIC KEY-----\n";
 
     /**
      * 解密 RSA 加密的数据
@@ -47,5 +55,33 @@ public class RSAUtils {
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
 
         return new String(decryptedBytes, "UTF-8");
+    }
+
+    /**
+     * 使用 RSA 加密数据
+     *
+     * @param data 需要加密的原始字符串
+     * @return 加密后的 Base64 编码字符串
+     * @throws Exception 可能的加密异常
+     */
+    public static String encrypt(String data) throws Exception {
+        // 去除密钥头尾标记并进行 Base64 解码
+        String publicKeyPEM = PUBLIC_KEY_PEM
+            .replace("-----BEGIN PUBLIC KEY-----", "")
+            .replace("-----END PUBLIC KEY-----", "")
+            .replaceAll("\\s", "");
+        byte[] keyBytes = Base64.getDecoder().decode(publicKeyPEM);
+
+        // 生成公钥
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PublicKey publicKey = keyFactory.generatePublic(keySpec);
+
+        // 加密数据
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedBytes = cipher.doFinal(data.getBytes("UTF-8"));
+
+        return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 }

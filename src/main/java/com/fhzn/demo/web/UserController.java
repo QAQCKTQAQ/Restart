@@ -103,29 +103,11 @@ public class UserController {
     public WebResponse<Long> save(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         QueryWrapper<User> wrapper = Wrappers.query();
-        if (!checkObjAllFieldsIsNull(user)) {
-            if(!Objects.isNull(user.getId())){
-                wrapper.eq("id", user.getId());
-            }
-            if(!Objects.isNull(user.getName())){
-                wrapper.eq("name", user.getName());
-            }
-            if(!Objects.isNull(user.getUsername())){
-                wrapper.eq("username", user.getUsername());
-            }
-            if(!Objects.isNull(user.getPassword())){
-                wrapper.eq("password", user.getPassword());
-            }
-            if(!Objects.isNull(user.getType())){
-                wrapper.eq("type", user.getType());
-            }
-            if(!Objects.isNull(user.getStatus())){
-                wrapper.eq("status", user.getStatus());
-            }
-            if(!Objects.isNull(user.getPhonenumber())){
-                wrapper.eq("phonenumber", user.getPhonenumber());
-            }
+
+        if(!Objects.isNull(user.getUsername())){
+            wrapper.eq("username", user.getUsername());
         }
+
         user.setCreator("ckt");
         user.setModifier("ckt");
         user.setCreatedTime(new Date());

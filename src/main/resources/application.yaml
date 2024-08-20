@@ -19,9 +19,9 @@ spring:
       add-mappings: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/server-demo?zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&createDatabaseIfNotExist=true
-    username: root
-    password: 123456
+    url: jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}?zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false&createDatabaseIfNotExist=true
+    username: ${mysql.username}
+    password: ${mysql.password}
   flyway:
     enabled: ${system.flyway.enabled}
     baseline-on-migrate: true

@@ -22,11 +22,7 @@ public class RSAUtils {
             "/OQyGGCLhCV5bgc=\n" +
             "-----END PRIVATE KEY-----";
 
-    private static final String PUBLIC_KEY_PEM =
-    "-----BEGIN PUBLIC KEY-----\n" +
-        "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMfcNpgD1tBLbD5kmnasrr68/04I23zH\n" +
-        "/MNEbpT40Gx/6M/2CDyFIs0kH1XqJevpiHZI8N0XiONFRoP3hZJvT+UCAwEAAQ==\n" +
-        "-----END PUBLIC KEY-----\n";
+    private static final String PUBLIC_KEY_PEM ="";
 
     /**
      * 解密 RSA 加密的数据

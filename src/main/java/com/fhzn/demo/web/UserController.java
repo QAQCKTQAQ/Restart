@@ -42,7 +42,6 @@ public class UserController {
         @RequestParam(required = false) Integer id,
         @RequestParam(required = false) String name,
         @RequestParam(required = false) String username,
-        @RequestParam(required = false) String password,
         @RequestParam(required = false) String type,
         @RequestParam(required = false) Integer status,
         @RequestParam(required = false) String phonenumber
@@ -57,9 +56,6 @@ public class UserController {
             }
             if(!Objects.isNull(username)){
                 wrapper.eq("username", username);
-            }
-            if(!Objects.isNull(password)){
-                wrapper.eq("password", password);
             }
             if(!Objects.isNull(type)){
                 wrapper.eq("type", type);
@@ -81,17 +77,24 @@ public class UserController {
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
         QueryWrapper<User> wrapper = Wrappers.query();
         wrapper.eq("username", user.getUsername());
-        String realpw=null;
-        try {
-            String encryptedData = user.getPassword(); // 替换为实际的加密数据
-            realpw = RSAUtils.decrypt(encryptedData);
+        String realpw1=null;
+        String realpw2=null;
+        User temp;
+        temp=userService.getOne(wrapper,false);
+        if(temp==null) {
+            return WebResponse.error("账号不存在");
+        }
+            try {
+            String encryptedData1 = user.getPassword();
+            String encryptedData2 = temp.getPassword();
+            realpw1 = RSAUtils.decrypt(encryptedData1);
+            realpw2 = RSAUtils.decrypt(encryptedData2);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        wrapper.eq("password", realpw);
-        if(userService.getOne(wrapper,false)==null){
-            return WebResponse.error("账号不存在01");
+        if(realpw1.equals(realpw2)==false){
+            return WebResponse.error("密码错误");
         }else{
             return WebResponse.success(null);
         }

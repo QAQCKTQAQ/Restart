@@ -2,9 +2,7 @@ package com.fhzn.demo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fhzn.demo.constant.StatusEnum;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 @TableName("user")

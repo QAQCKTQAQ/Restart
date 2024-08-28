@@ -1,7 +1,5 @@
 package com.fhzn.demo.web.vo;
 
-import com.fhzn.demo.constant.StatusEnum;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,4 +18,5 @@ public class UserVO {
     private String modifier;
     private Date createdTime;
     private Date updatedTime;
+    private int if_delete;
 }

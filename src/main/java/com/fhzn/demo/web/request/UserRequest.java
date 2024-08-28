@@ -31,11 +31,15 @@ public class UserRequest {
     @Length(max = 32)
     private String type;
 
-    @Schema(description = "状态。1：启用；2：禁用")
+    @Schema(description = "状态。0：启用；1：禁用")
     @NotNull
     private String status;
 
     @Schema(description = "手机号")
     @Length(max = 32)
     private String phonenumber;
+
+    @Schema(description = "状态。0：存在；1：删除")
+    @NotNull
+    private int if_delete;
 }

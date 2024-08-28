@@ -11,4 +11,5 @@ public class BaseEntity {
     private String modifier;
     private Date createdTime;
     private Date updatedTime;
+    private int if_delete;
 }

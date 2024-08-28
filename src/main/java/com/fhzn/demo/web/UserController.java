@@ -52,7 +52,7 @@ public class UserController {
                 wrapper.eq("id",id);
             }
             if(!Objects.isNull(name)){
-                wrapper.eq("name", name);
+                wrapper.like("name", name);
             }
             if(!Objects.isNull(username)){
                 wrapper.eq("username", username);
@@ -66,6 +66,7 @@ public class UserController {
             if(!Objects.isNull(phonenumber)){
                 wrapper.eq("phonenumber", phonenumber);
             }
+                wrapper.eq("if_delete",0);
         Page<User> page = userService.page(Page.of(request.getPage(), request.getPageSize()), wrapper);
         PageInfo<UserVO> ret = Converters.convert2page(page, UserMapper::toApplicationVO);
         return WebResponse.success(ret);
@@ -81,7 +82,7 @@ public class UserController {
         String realpw2=null;
         User temp;
         temp=userService.getOne(wrapper,false);
-        if(temp==null) {
+        if(temp==null||temp.getIf_delete()==1||temp.getStatus().equals("1")) {
             return WebResponse.error("账号不存在");
         }
             try {
@@ -119,6 +120,7 @@ public class UserController {
             return WebResponse.error("账号已存在");
         }
         user.setId(null);
+        user.setIf_delete(0);
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }
@@ -131,30 +133,30 @@ public class UserController {
         QueryWrapper<User> wrapper = Wrappers.query();
         user.setModifier("ckt");
         wrapper.eq("username", user.getUsername());
-        if(userService.getOne(wrapper,false)==null){
+        User temp=userService.getOne(wrapper,false);
+        if(temp==null||temp.getIf_delete()==1){
             return WebResponse.error("账号不存在");
         }
-        user.setId(userService.getOne(wrapper,false).getId());
+        user.setIf_delete(0);
+        user.setId(temp.getId());
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }
 
-    @DeleteMapping("")
+    @PostMapping("/auth-service/v2/user/delete")
     @Operation(description = "删除用户/恢复用户")
     public WebResponse<Long> deleteOrRestore(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
-        user.setModifier(RequestContext.getRequestData().getNickname());
+        user.setUpdatedTime(new Date());
         QueryWrapper<User> wrapper = Wrappers.query();
+        user.setModifier("ckt");
         wrapper.eq("username", user.getUsername());
-        if(userService.getOne(wrapper,false)==null){
+        User temp=userService.getOne(wrapper,false);
+        if(temp==null||temp.getIf_delete()==1){
             return WebResponse.error("账号不存在");
         }
-        if(user.getStatus().equals("1")){
-            user.setStatus("0");
-        }else if (user.getStatus().equals("0")){
-            user.setStatus("1");
-        }
-
+        user.setId(temp.getId());
+        user.setIf_delete(1);
         userService.saveOrUpdate(user);
         return WebResponse.success(user.getId());
     }

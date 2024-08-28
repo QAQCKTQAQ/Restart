@@ -23,6 +23,7 @@ public interface UserMapper {
         userVO.setModifier(user.getModifier());
         userVO.setCreatedTime(user.getCreatedTime());
         userVO.setUpdatedTime(user.getUpdatedTime());
+        userVO.setIf_delete(user.getIf_delete());
 
         return userVO;
     }
@@ -42,6 +43,7 @@ public interface UserMapper {
         user.setStatus(request.getStatus());
         user.setType(request.getType());
         user.setPhonenumber(request.getPhonenumber());
+        user.setIf_delete(request.getIf_delete());
 
 
         return user;

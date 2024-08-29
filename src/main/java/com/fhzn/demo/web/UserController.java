@@ -12,7 +12,6 @@ import com.fhzn.demo.service.UserService;
 import com.fhzn.demo.util.RSAUtils;
 import com.fhzn.demo.web.converter.Converters;
 import com.fhzn.demo.web.converter.UserMapper;
-import com.fhzn.demo.web.interceptor.RequestContext;
 import com.fhzn.demo.web.request.UserRequest;
 import com.fhzn.demo.web.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +35,6 @@ public class UserController {
     private final UserService userService;
     @GetMapping("/auth-service/user/query")
     @Operation(description = "用户列表/用户查询/登录验证")
-//    public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request,
-////                                              @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user)
     public WebResponse<PageInfo<UserVO>> list(@ParameterObject PageRequest request, @Parameter(name = "name", description = "目标用户名称")
         @RequestParam(required = false) Integer id,
         @RequestParam(required = false) String name,
@@ -78,28 +75,29 @@ public class UserController {
                                               @Parameter(name = "name", description = "目标用户名称") @RequestBody(required = false) User user) {
         QueryWrapper<User> wrapper = Wrappers.query();
         wrapper.eq("username", user.getUsername());
-        String realpw1=null;
-        String realpw2=null;
+        wrapper.eq("if_delete", 0);
+        wrapper.eq("status", 0);
+        String realpw1;
+        String realpw2;
         User temp;
-        temp=userService.getOne(wrapper,false);
-        if(temp==null||temp.getIf_delete()==1||temp.getStatus().equals("1")) {
+        temp = userService.getOne(wrapper, false);
+        if (temp == null) {
             return WebResponse.error("账号不存在");
         }
-            try {
+        try {
             String encryptedData1 = user.getPassword();
             String encryptedData2 = temp.getPassword();
             realpw1 = RSAUtils.decrypt(encryptedData1);
             realpw2 = RSAUtils.decrypt(encryptedData2);
-
-        } catch (Exception e) {
+            if (!realpw1.equals(realpw2)) {
+                return WebResponse.error("密码错误");
+            } else {
+                return WebResponse.success(null);
+            }
+        }   catch (Exception e) {
             e.printStackTrace();
-        }
-        if(realpw1.equals(realpw2)==false){
             return WebResponse.error("密码错误");
-        }else{
-            return WebResponse.success(null);
         }
-
     }
 
     @PostMapping("/auth-service/v2/user/add")
@@ -107,11 +105,8 @@ public class UserController {
     public WebResponse<Long> save(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         QueryWrapper<User> wrapper = Wrappers.query();
-
-        if(!Objects.isNull(user.getUsername())){
-            wrapper.eq("username", user.getUsername());
-        }
-
+        wrapper.eq("username", user.getUsername());
+        wrapper.eq("if_delete",0);
         user.setCreator("ckt");
         user.setModifier("ckt");
         user.setCreatedTime(new Date());
@@ -132,9 +127,10 @@ public class UserController {
         user.setUpdatedTime(new Date());
         QueryWrapper<User> wrapper = Wrappers.query();
         user.setModifier("ckt");
+        wrapper.eq("if_delete",0);
         wrapper.eq("username", user.getUsername());
         User temp=userService.getOne(wrapper,false);
-        if(temp==null||temp.getIf_delete()==1){
+        if(temp==null){
             return WebResponse.error("账号不存在");
         }
         user.setIf_delete(0);
@@ -144,15 +140,16 @@ public class UserController {
     }
 
     @PostMapping("/auth-service/v2/user/delete")
-    @Operation(description = "删除用户/恢复用户")
+    @Operation(description = "删除用户")
     public WebResponse<Long> deleteOrRestore(@Validated @RequestBody UserRequest request) {
         User user = UserMapper.fromRequest(request);
         user.setUpdatedTime(new Date());
         QueryWrapper<User> wrapper = Wrappers.query();
         user.setModifier("ckt");
         wrapper.eq("username", user.getUsername());
+        wrapper.eq("if_delete",0);
         User temp=userService.getOne(wrapper,false);
-        if(temp==null||temp.getIf_delete()==1){
+        if(temp==null){
             return WebResponse.error("账号不存在");
         }
         user.setId(temp.getId());

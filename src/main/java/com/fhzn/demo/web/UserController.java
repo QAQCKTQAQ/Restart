@@ -64,6 +64,7 @@ public class UserController {
                 wrapper.eq("phonenumber", phonenumber);
             }
                 wrapper.eq("if_delete",0);
+            wrapper.orderByDesc("id");
         Page<User> page = userService.page(Page.of(request.getPage(), request.getPageSize()), wrapper);
         PageInfo<UserVO> ret = Converters.convert2page(page, UserMapper::toApplicationVO);
         return WebResponse.success(ret);

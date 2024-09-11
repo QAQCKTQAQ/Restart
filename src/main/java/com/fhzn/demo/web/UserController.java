@@ -117,7 +117,11 @@ public class UserController {
         }
         user.setId(null);
         user.setIf_delete(0);
-        userService.saveOrUpdate(user);
+        try {
+            updateUserWithRetry(user,4);
+        }catch (RuntimeException e){
+            return WebResponse.error("当前操作人数过多，请稍后再试");
+        }
         return WebResponse.success(user.getId());
     }
 
@@ -136,7 +140,11 @@ public class UserController {
         }
         user.setIf_delete(0);
         user.setId(temp.getId());
-        userService.saveOrUpdate(user);
+        try {
+            updateUserWithRetry(user,4);
+        }catch (RuntimeException e){
+            return WebResponse.error("当前操作人数过多，请稍后再试");
+        }
         return WebResponse.success(user.getId());
     }
 
@@ -155,7 +163,12 @@ public class UserController {
         }
         user.setId(temp.getId());
         user.setIf_delete(1);
-        userService.saveOrUpdate(user);
+        try {
+            updateUserWithRetry(user,4);
+        }catch (RuntimeException e){
+            return WebResponse.error("当前操作人数过多，请稍后再试");
+        }
+
         return WebResponse.success(user.getId());
     }
 
@@ -185,5 +198,19 @@ public class UserController {
         }
         return true;
     }
+
+    public boolean updateUserWithRetry(User user, int retryCount) {
+        if (retryCount <= 0) {
+            throw new RuntimeException("重试次数过多，更新失败");
+        }
+
+        boolean updateResult = userService.saveOrUpdate(user);
+        if (!updateResult) {
+            // 如果更新失败，递归调用，自动重试
+            return updateUserWithRetry(user, retryCount - 1);
+        }
+        return true;
+    }
+
 
 }

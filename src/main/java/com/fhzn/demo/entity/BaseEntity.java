@@ -1,5 +1,6 @@
 package com.fhzn.demo.entity;
 
+import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,4 +13,6 @@ public class BaseEntity {
     private Date createdTime;
     private Date updatedTime;
     private int if_delete;
+    @Version
+    private Integer version;
 }

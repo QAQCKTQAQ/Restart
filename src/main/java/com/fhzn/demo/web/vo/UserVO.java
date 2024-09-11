@@ -19,4 +19,5 @@ public class UserVO {
     private Date createdTime;
     private Date updatedTime;
     private int if_delete;
+    private Integer version;
 }

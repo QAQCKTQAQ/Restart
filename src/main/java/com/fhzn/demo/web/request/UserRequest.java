@@ -42,4 +42,7 @@ public class UserRequest {
     @Schema(description = "状态。0：存在；1：删除")
     @NotNull
     private int if_delete;
+
+    @Schema(description = "乐观锁版本")
+    private Integer version;
 }
